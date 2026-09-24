@@ -12,3 +12,11 @@ AWS_REGION = os.getenv(
 BEDROCK_MODEL_ID = os.getenv(
     "BEDROCK_MODEL_ID"
 )
+
+BEDROCK_EMBEDDING_MODEL_ID = os.getenv(
+    "BEDROCK_EMBEDDING_MODEL_ID"
+)
+
+DOCS_DIR = os.getenv(
+    "DOCS_PATH"
+)

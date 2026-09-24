@@ -1,0 +1,11 @@
+AWS CloudTrail records API activity in AWS accounts.
+
+CloudTrail can be used to investigate:
+- IAM changes
+- Console logins
+- Access key creation
+- Security group modifications
+- EC2 API activity
+
+For suspicious IAM activity, investigators should
+review CloudTrail events around the time of the incident.

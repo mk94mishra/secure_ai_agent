@@ -1,0 +1,8 @@
+For a high severity EC2 incident:
+
+1. Identify affected instance.
+2. Review CloudTrail events.
+3. Review IAM changes.
+4. Review source IP.
+5. Check network activity.
+6. Determine whether credentials were compromised.

@@ -1,0 +1,9 @@
+Valid Accounts - T1078
+
+Attackers may use legitimate credentials to gain access
+to systems.
+
+Account Manipulation - T1098
+
+Attackers may manipulate accounts to maintain or elevate
+access.
