@@ -10,6 +10,11 @@ from agents.state import AgentState
 from policy.engine import evaluate_action, PolicyResult
 from storage.audit import record_audit_event
 
+from security.guardrails import (
+    enforce_action_boundary,
+    GuardrailViolation,
+)
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -309,6 +314,53 @@ def action_controller_node(
             result["audit_error"] = audit_error
 
         return result
+
+    
+    # Additional security boundary: deny unsupported actions,
+    # unauthorized tenants, invalid confidence and missing approval.
+    try:
+        enforce_action_boundary(
+            {
+                "tenant_id": request.tenant_id,
+                "action": request.action,
+                "resource_id": request.resource_id,
+                "risk": request.risk,
+                "confidence": request.confidence,
+                "incident_id": request.incident_id,
+                "idempotency_key": request.idempotency_key,
+                "approved_by": request.approved_by,
+                "approval_reason": request.approval_reason,
+                "approval_status": state.get("approval_status"),
+            }
+        )
+    except GuardrailViolation as exc:
+        reason = str(exc)
+
+        audit_error = _record_policy_audit(
+            request,
+            "DENY",
+            reason,
+        )
+
+        result = _deny(
+            reason,
+            action=action,
+            resource_id=resource_id,
+        )
+
+        result["action_result"] = {
+            "policy_decision": "DENY",
+            "policy_reason": reason,
+            "audit_status": (
+                "FAILED" if audit_error else "RECORDED"
+            ),
+        }
+
+        if audit_error:
+            result["audit_error"] = audit_error
+
+        return result
+
 
     # Evaluate deterministic policy; the LLM cannot override this result.
     try:
